@@ -72,7 +72,7 @@ check_new_ver(){
 版本列表请去这里获取：${Green_font_prefix}[ https://github.com/txthinking/brook/releases ]${Font_color_suffix}"
 	read -e -p "直接回车即自动获取:" brook_new_ver
 	if [[ -z ${brook_new_ver} ]]; then
-		brook_new_ver=$(wget -qO- https://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
+		brook_new_ver=$(wget -qO- http://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
 		[[ -z ${brook_new_ver} ]] && echo -e "${Error} Brook 最新版本获取失败！" && exit 1
 		echo -e "${Info} 检测到 Brook 最新版本为 [ ${brook_new_ver} ]"
 	else
@@ -102,9 +102,9 @@ Download_brook(){
 	[[ ! -e ${file} ]] && mkdir ${file}
 	cd ${file}
 	if [[ ${bit} == "x86_64" ]]; then
-		wget --no-check-certificate -N "https://github.com/txthinking/brook/releases/download/${brook_new_ver}/brook"
+		wget --no-check-certificate -N "http://github.com/txthinking/brook/releases/download/${brook_new_ver}/brook"
 	else
-		wget --no-check-certificate -N "https://github.com/txthinking/brook/releases/download/${brook_new_ver}/brook_linux_386"
+		wget --no-check-certificate -N "http://github.com/txthinking/brook/releases/download/${brook_new_ver}/brook_linux_386"
 		mv brook_linux_386 brook
 	fi
 	[[ ! -e "brook" ]] && echo -e "${Error} Brook 下载失败 !" && exit 1
@@ -112,14 +112,14 @@ Download_brook(){
 }
 Service_brook(){
 	if [[ ${release} = "centos" ]]; then
-		if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/service/brook-pf_centos -O /etc/init.d/brook-pf; then
+		if ! wget --no-check-certificate http://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/service/brook-pf_centos -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/brook-pf
 		chkconfig --add brook-pf
 		chkconfig brook-pf on
 	else
-		if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/service/brook-pf_debian -O /etc/init.d/brook-pf; then
+		if ! wget --no-check-certificate http://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/service/brook-pf_debian -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/brook-pf
@@ -624,13 +624,13 @@ Set_iptables(){
 	fi
 }
 Update_Shell(){
-	sh_new_ver=$(wget --no-check-certificate -qO- -t1 -T3 "https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1) && sh_new_type="github"
+	sh_new_ver=$(wget --no-check-certificate -qO- -t1 -T3 "http://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1) && sh_new_type="github"
 	[[ -z ${sh_new_ver} ]] && echo -e "${Error} 无法链接到 Github !" && exit 0
 	if [[ -e "/etc/init.d/brook-pf" ]]; then
 		rm -rf /etc/init.d/brook-pf
 		Service_brook
 	fi
-	wget -N --no-check-certificate "https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh" && chmod +x brook.sh
+	wget -N --no-check-certificate "http://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh" && chmod +x brook.sh
 	echo -e "脚本已更新为最新版本[ ${sh_new_ver} ] !(注意：因为更新方式为直接覆盖当前运行的脚本，所以可能下面会提示一些报错，无视即可)" && exit 0
 }
 check_sys
